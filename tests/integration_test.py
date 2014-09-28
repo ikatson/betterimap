@@ -147,8 +147,8 @@ class GmailAccessTokenTest(GmailTest, unittest.TestCase):
     access_token = None
     refresh_token = os.environ['GMAIL_OAUTH_REFRESH_TOKEN']
     url = 'https://accounts.google.com/o/oauth2/token'
-    client_id = os.environ['GMAIL_OAUTH_SECRET_KEY']
-    client_secret = os.environ['GMAIL_OAUTH_SECRET_KEY']
+    client_id = os.environ['GMAIL_OAUTH_CLIENT_ID']
+    client_secret = os.environ['GMAIL_OAUTH_CLIENT_SECRET']
 
     @classmethod
     def get_imap(cls):
