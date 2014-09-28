@@ -14,7 +14,7 @@ setup(name='betterimap',
       author='Igor Katson',
       author_email='igor.katson@gmail.com',
       url='https://github.com/ikatson/betterimap',
-      packages='betterimap',
+      packages=find_packages(),
       classifiers=[
           'Development Status :: 3 - Alpha',
           'Intended Audience :: Developers',
