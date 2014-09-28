@@ -1,0 +1,41 @@
+MIME-Version: 1.0
+Received: by 10.182.142.106 with HTTP; Sun, 28 Sep 2014 00:07:13 -0700 (PDT)
+Date: Sun, 28 Sep 2014 00:07:13 -0700
+Delivered-To: addr1@gmail.com
+Message-ID: <CALE8M=7SmJSSF1-qs_TYX-Y2z5cS97h9uKRMNT0atMgcMBrb=Q@mail.gmail.com>
+Subject: =?UTF-8?B?0KLQtdGB0YLQvtCy0L7QtSDQv9C40YHRjNC80L4=?=
+From: Igor Katson <addr1@gmail.com>
+To: Igor Katson <addr1@gmail.com>, Galina <addr2@gmail.com>
+Content-Type: multipart/mixed; boundary=001a113e3c38ba63d905041accf6
+
+--001a113e3c38ba63d905041accf6
+Content-Type: multipart/alternative; boundary=001a113e3c38ba63d405041accf4
+
+--001a113e3c38ba63d405041accf4
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+
+0KLQtdC60YHRgiwg0LAg0YLQsNC60LbQtSAqSFRNTCoNCg==
+--001a113e3c38ba63d405041accf4
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: base64
+
+PGRpdiBkaXI9Imx0ciI+0KLQtdC60YHRgiwg0LAg0YLQsNC60LbQtSA8Yj5IVE1MPC9iPjwvZGl2
+Pg0K
+--001a113e3c38ba63d405041accf4--
+--001a113e3c38ba63d905041accf6
+Content-Type: text/plain; charset=US-ASCII; name="test.txt"
+Content-Disposition: attachment; filename="test.txt"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_i0m1n5p51
+
+U29tZSB0ZXh0Cg==
+--001a113e3c38ba63d905041accf6
+Content-Type: image/png; name="pixel.png"
+Content-Disposition: attachment; filename="pixel.png"
+Content-Transfer-Encoding: base64
+X-Attachment-Id: f_i0m1n5oo0
+
+iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEX/TQBcNTh/AAAAAXRSTlPM
+0jRW/QAAAApJREFUeJxjYgAAAAYAAzY3fKgAAAAASUVORK5CYII=
+--001a113e3c38ba63d905041accf6--

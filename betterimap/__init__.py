@@ -124,6 +124,14 @@ class MessageWrapper(object):
     # How to map certain bad-formatted encodings to python encodings.
     BAD_ENCODING_MAP = {'cp-1251': 'cp1251'}
 
+    # These encodings will be tried as a last resort, if the message does not
+    # decode with the provided encoding, or it is empty.
+    LAST_RESORT_ENCODINGS = ('windows-1251', 'koi8-r', 'utf-8')
+
+    # If chardet is used in decoding headers, this confidence will be required
+    # for the header to decode successfully.
+    CHARDET_CONFIDENCE = 0.7
+
     def __init__(self, email_message):
         assert isinstance(email_message, email.message.Message)
         self.msg = email_message
@@ -161,6 +169,7 @@ class MessageWrapper(object):
     def received(self):
         """Timezone-aware date from the "Received:" header."""
         received = self.get_header('received').split('\n')[-1].strip()
+        received = received.split(';')[-1]
         return self.parse_date(received)
 
     @property
@@ -210,7 +219,7 @@ class MessageWrapper(object):
         if chardet:
             # try to guess the charset if chardet is available
             detected = chardet.detect(payload)
-            if detected['confidence'] > 0.7:
+            if detected['confidence'] > self.CHARDET_CONFIDENCE:
                 payload = payload.decode(detected['encoding'])
         return payload
 
@@ -259,16 +268,28 @@ class MessageWrapper(object):
         If join=True, returns a unicode object, otherwise a list of unicode
         values.
         """
-        result = []
         hvalue = self.msg[name]
         if not hvalue:
             return
-        hvalue = self._fix_header(hvalue)
+        result = self._get_header(hvalue)
+        if join:
+            return ' '.join(result)
+
+    @classmethod
+    def _get_header(cls, hvalue):
+        """Decode an email header value
+
+        Returns a list of unicode objects.
+        """
+        result = []
+        if not hvalue:
+            return
+        hvalue = cls._fix_header(hvalue)
         seen_encodings = set()
 
         for hvalue, encoding in email.header.decode_header(hvalue):
             if encoding:
-                encoding = self.BAD_ENCODING_MAP.get(encoding, encoding)
+                encoding = cls.BAD_ENCODING_MAP.get(encoding, encoding)
                 try:
                     hvalue = hvalue.decode(encoding)
                     seen_encodings.add(encoding)
@@ -306,9 +327,9 @@ class MessageWrapper(object):
                     continue
             # Try some common encodings (this lib was written for russian
             # emails).
-            for encoding in ('windows-1251', 'koi8-r', 'utf-8'):
+            for encoding in cls.LAST_RESORT_ENCODINGS:
                 try:
-                    result[idx] = hvalue.decode(encoding)
+                    hvalue = result[idx] = hvalue.decode(encoding)
                     break
                 except UnicodeDecodeError:
                     continue
@@ -319,11 +340,10 @@ class MessageWrapper(object):
                 else:
                     encoding = 'utf-8'
                 result[idx] = hvalue.decode(encoding, errors='ignore')
-        if join:
-            return ' '.join(result)
         return result
 
-    def _fix_header(self, header):
+    @staticmethod
+    def _fix_header(header):
         """Try to fix an invalid header."""
         # Add space between address and header so it parses with decode_header.
         missing_space_re = re.compile(r'(=\?.*?\?=)(<.*?@.*?>)')
@@ -331,17 +351,25 @@ class MessageWrapper(object):
         return header
 
     @staticmethod
-    def parse_date(string_date):
-        """Parse a date string and return a UTC datetime.datetime object."""
+    def parse_date(string_date, default_tz=UTC()):
+        """Parse a date string and return an aware datetime.datetime object.
+
+        default_tz: what timezone to use, if no timezone is provided. If None,
+          will return a naive datetime in this case.
+        """
         tup = email.utils.parsedate_tz(string_date)
         if not tup:
             return
+        # Timezone present.
         if tup[9]:
             date = datetime.datetime.fromtimestamp(
                 time.mktime(tup[:9]) - tup[9])
+            date = date.replace(tzinfo=UTC())
         else:
             date = datetime.datetime.fromtimestamp(time.mktime(tup[:9]))
-        return date.replace(tzinfo=UTC())
+            if default_tz:
+                date = date.replace(tzinfo=default_tz)
+        return date
 
     # These methods are here just to appear in shell completion.
     def get_content_maintype(self):
@@ -769,7 +797,7 @@ class IMAPAdapter(object):
         msg = email.message_from_string(email_string)
         return MessageWrapper(msg)
 
-    def search_emails(
+    def easy_search(
         self, since=None, before=None, subject=None, sender=None,
         exact_date=None, headers=None, fetch_spec=FETCH_RFC822,
         other_queries=(),
@@ -931,12 +959,12 @@ class Gmail(IMAPAdapter):
         kwargs['refresh_token_callback'] = self.refresh_token_callback
         return args, kwargs
 
-    def search_emails(self, x_gm_msgid=None, **kwargs):
+    def easy_search(self, x_gm_msgid=None, **kwargs):
         if x_gm_msgid:
             kwargs.setdefault('other_queries', []).extend([
                 'X-GM-MSGID', x_gm_msgid
             ])
-        return super(Gmail, self).search_emails(**kwargs)
+        return super(Gmail, self).easy_search(**kwargs)
 
     def fetch_msg_by_x_gm_msgid(self, x_gm_msgid, fetch_spec=FETCH_RFC822):
         for msg in self.search(

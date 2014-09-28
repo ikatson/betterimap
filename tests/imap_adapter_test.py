@@ -19,6 +19,7 @@ class IMAPAdapterStub(betterimap.IMAPAdapter):
         super(IMAPAdapterStub, self).__init__('user', 'password', host='host')
 
 
+# TODO(igor): write more tests here..
 class IMAPAdapterTest(unittest.TestCase):
 
     def testGetInboxFolderChoosesCorrectResultIfAmbiguous(self):

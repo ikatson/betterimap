@@ -1,6 +1,6 @@
 # coding: utf-8
-"""Test integration with real-world IMAP servers."""
 
+"""Test how betterimap works with real-world IMAP servers."""
 
 import datetime
 import logging
@@ -87,7 +87,7 @@ class BaseIntegrationTestMixin(object):
         sender = msgdict['from'][1]
         result = None
         for i, msg in enumerate(
-            self.imap.search_emails(
+            self.imap.easy_search(
                 sender=sender, since=since, before=before,
                 subject=subject,
             )

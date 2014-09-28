@@ -1,2 +1,4 @@
 nose
 mock
+pytz
+chardet
