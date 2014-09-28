@@ -81,7 +81,38 @@ for msg in email.easy_search(sender='123@example.com', limit=5):
     pass    
 ```
 
+### Accessing Gmail with OAuth2
 
-### Gmail with OAuth2
+As Gmail forbids login/password access to IMAP, and only allows 
+[OAuth2 access](https://developers.google.com/accounts/docs/OAuth2),
+you will need an access token (short term use), and optionally a refresh token 
+(for long term use) to login. To obtain them you will need:
 
+- An application set up in [google developers console](https://console.developers.google.com/project)
+- An access or refresh token given to this application, with scope ```https://mail.google.com/```
+
+You can read [here](https://developers.google.com/accounts/docs/OAuth2) about 
+how to do all this.
+
+Once you have them, do something like:
+
+```python
+
+# If you have access token:
+gmail = betterimap.Gmail(login='username@gmail.com', access_token=access_token)
+
+# If you have refresh token:
+gmail = betterimap.Gmail(
+    login='username@gmail.com',
+    access_token=access_token
+    refresh_token=refresh_token,
+    client_id=client_id,
+    client_secret=client_secret,
+    refresh_token_callback=refresh_callback  # optional
+)
+ 
 ```
+
+If ```refresh_token_callback``` is provided, it will be called with a dictionary
+in format ```{'access_token': '...', 'expires_in': integer}```, so that you 
+can update your storage with the refreshed access token.
