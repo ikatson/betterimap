@@ -1,6 +1,5 @@
 language: python
 python:
-  - "2.6"
   - "2.7"
 before_install:
   - openssl aes-256-cbc -K $encrypted_78ddb687d61b_key -iv $encrypted_78ddb687d61b_iv -in tests/secrets.enc -out tests/secrets -d
